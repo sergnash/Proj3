@@ -54,10 +54,15 @@ python pdfgen.py --data data/invoices.csv --template templates/invoice.html --in
 ```
 pdfgen.py            скрипт
 requirements.txt     зависимости
-data/                invoices.csv, orders.json (примеры)
-templates/           invoice.html, order.html (примеры)
+data/                сюда кладутся ваши CSV/JSON
+templates/           сюда кладутся ваши HTML-шаблоны
 output/              сгенерированные документы
+examples/            демо-данные и демо-шаблоны
 ```
+
+Каталоги `data/`, `templates/`, `output/` создаются автоматически при первом запуске, если их
+нет. Если `data/` или `templates/` пусты, скрипт подставит содержимое `examples/` и сообщит об
+этом — так демо работает сразу после клонирования. Явно указанные `-d`/`-t` отключают подстановку.
 
 ## Как устроены данные
 

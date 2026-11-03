@@ -250,6 +250,10 @@ def load_records(path: Path) -> tuple[list[dict[str, Any]], dict[str, str]]:
     return load_csv(path) if path.suffix.lower() == ".csv" else load_json(path)
 
 
+# Результаты работы самого скрипта: <шаблон>_<счёт>_<дата-время>.<ext>
+GENERATED_RE = re.compile(r"_\d{8}-\d{6}\.(html|htm|pdf)$", re.IGNORECASE)
+
+
 def discover(directory: Path, exts: set[str]) -> list[Path]:
     if not directory.is_dir():
         return []
@@ -259,6 +263,8 @@ def discover(directory: Path, exts: set[str]) -> list[Path]:
             continue
         if path.name.startswith((".", "~$")):
             continue
+        if GENERATED_RE.search(path.name):
+            continue  # не показываем собственные результаты как шаблоны/данные
         found.append(path)
     return sorted(found, key=lambda p: (len(p.relative_to(directory).parts), p.name.lower()))
 
@@ -612,6 +618,20 @@ def generate(
     return target
 
 
+def ensure_dirs(*dirs: Path) -> list[Path]:
+    """Создаёт каталоги, которых нет. Возвращает список созданных."""
+    created: list[Path] = []
+    for folder in dirs:
+        if folder.is_dir():
+            continue
+        try:
+            folder.mkdir(parents=True, exist_ok=True)
+            created.append(folder)
+        except OSError as exc:
+            print(f"  ! Не удалось создать каталог {folder}: {exc}")
+    return created
+
+
 def main(argv: list[str] | None = None) -> int:
     setup_console()
 
@@ -627,8 +647,8 @@ def main(argv: list[str] | None = None) -> int:
             "  python pdfgen.py --all --no-open\n"
         ),
     )
-    parser.add_argument("-d", "--data-dir", default=str(ROOT / "data"), help="каталог с CSV/JSON (по умолчанию ./data)")
-    parser.add_argument("-t", "--template-dir", default=str(ROOT / "templates"), help="каталог с HTML-шаблонами (по умолчанию ./templates)")
+    parser.add_argument("-d", "--data-dir", default=None, help="каталог с CSV/JSON (по умолчанию ./data)")
+    parser.add_argument("-t", "--template-dir", default=None, help="каталог с HTML-шаблонами (по умолчанию ./templates)")
     parser.add_argument("-o", "--output-dir", default=str(ROOT / "output"), help="каталог для PDF (по умолчанию ./output)")
     parser.add_argument("--data", help="файл данных — пропускает интерактивный выбор")
     parser.add_argument("--template", help="HTML-шаблон — пропускает интерактивный выбор")
@@ -641,18 +661,40 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--open-with", choices=("system", "browser"), default="system", help="чем открывать результат")
     args = parser.parse_args(argv)
 
-    data_dir = Path(args.data_dir).expanduser().resolve()
-    template_dir = Path(args.template_dir).expanduser().resolve()
+    data_dir_given = args.data_dir is not None
+    template_dir_given = args.template_dir is not None
+    data_dir = Path(args.data_dir or (ROOT / "data")).expanduser().resolve()
+    template_dir = Path(args.template_dir or (ROOT / "templates")).expanduser().resolve()
     output_dir = Path(args.output_dir).expanduser().resolve()
 
     try:
+        created = ensure_dirs(data_dir, template_dir, output_dir)
         data_files = discover(data_dir, DATA_EXTS)
         templates = discover(template_dir, TEMPLATE_EXTS)
+
+        # Каталоги по умолчанию пусты, а рядом лежат демо-данные — показываем их
+        examples_dir = ROOT / "examples"
+        demo_note: list[str] = []
+        if examples_dir.is_dir() and not data_dir_given and not template_dir_given:
+            if not data_files:
+                demo_files = discover(examples_dir, DATA_EXTS)
+                if demo_files:
+                    data_dir, data_files = examples_dir, demo_files
+                    demo_note.append("данные взяты из examples/ (data/ пуст)")
+            if not templates:
+                demo_templates = discover(examples_dir, TEMPLATE_EXTS)
+                if demo_templates:
+                    template_dir, templates = examples_dir, demo_templates
+                    demo_note.append("шаблоны взяты из examples/ (templates/ пуст)")
 
         heading("PDF Generator  ·  HTML → PDF")
         info("Каталог данных:", str(data_dir))
         info("Каталог шаблонов:", str(template_dir))
         info("Каталог вывода:", str(output_dir))
+        for folder in created:
+            print(f"  + создан каталог: {folder}")
+        for note in demo_note:
+            print(f"  · {note}")
 
         # ---- 1. Файлы данных ------------------------------------------------
         print()

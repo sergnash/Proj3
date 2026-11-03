@@ -153,7 +153,7 @@ class ReminderGUI:
             f"ВСЕГО {total} | "
             f"Ожидает {counts.get('Ожидает', 0)} | "
             f"Готово {counts.get('Готово', 0)} | "
-            f"Просрочено {counts.get('Просрочено', 0)} |"
+            f"Просрочено {counts.get('Просрочено', 0)} | "
             f"Отменено {counts.get('Отменено', 0)}"
         )
         self.status_bar.set(summary)
