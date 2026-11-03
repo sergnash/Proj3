@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Счёт {{ invoice_id }}</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 20mm;
+    @bottom-center {
+      content: "Счёт " counter(page) " из " counter(pages);
+      font-size: 9pt;
+      color: #8a8f98;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-size: 10.5pt;
+    line-height: 1.5;
+    color: #1f2430;
+  }
+  h1 { font-size: 22pt; margin: 0; letter-spacing: -0.02em; }
+  .muted { color: #6b7280; }
+  .small { font-size: 9pt; }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #1f2430;
+  }
+  .doc-type {
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
+  .meta { text-align: right; font-size: 9.5pt; }
+  .meta dt { color: #6b7280; }
+  .meta dd { margin: 0 0 6px; font-weight: 600; }
+
+  .parties {
+    display: flex;
+    gap: 32px;
+    margin: 22px 0 26px;
+  }
+  .party { flex: 1; }
+  .party h2 {
+    margin: 0 0 6px;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #6b7280;
+    font-weight: 600;
+  }
+  .party .name { font-size: 12pt; font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  thead th {
+    text-align: left;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+    border-bottom: 1.5px solid #1f2430;
+    padding: 8px 6px;
+  }
+  tbody td {
+    padding: 9px 6px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) { background: #fafafa; }
+  .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  .totals {
+    width: 52%;
+    margin-left: auto;
+    margin-top: 14px;
+  }
+  .totals td { padding: 5px 6px; border: none; }
+  .totals .label { color: #6b7280; }
+  .totals .grand {
+    border-top: 1.5px solid #1f2430;
+    font-size: 13pt;
+    font-weight: 700;
+    padding-top: 9px;
+  }
+
+  .status {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-size: 9pt;
+    font-weight: 600;
+  }
+  footer {
+    margin-top: 40px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 8.5pt;
+    color: #8a8f98;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="doc-type">Счёт на оплату</div>
+    <h1>{{ invoice_id }}</h1>
+  </div>
+  <dl class="meta">
+    <dt>Дата</dt>
+    <dd>{{ date | dash }}</dd>
+    {% if due_date %}<dt>Оплатить до</dt><dd>{{ due_date }}</dd>{% endif %}
+  </dl>
+</header>
+
+<div class="parties">
+  <div class="party">
+    <h2>Покупатель</h2>
+    <div class="name">{{ buyer | dash }}</div>
+  </div>
+  <div class="party">
+    <h2>Позиций</h2>
+    <div class="name">{{ rows | length }}</div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 6%">№</th>
+      <th>Наименование</th>
+      <th class="num" style="width: 10%">Кол-во</th>
+      <th class="num" style="width: 16%">Цена</th>
+      <th class="num" style="width: 16%">Сумма</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ row.item | dash }}</td>
+      <td class="num">{{ row.quantity | dash }}</td>
+      <td class="num">{{ row.price | money }}</td>
+      <td class="num">{{ row.amount | money }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<table class="totals">
+  <tr>
+    <td class="label">Подытог</td>
+    <td class="num">{{ rows | map(attribute='amount') | map('float') | sum | money }}</td>
+  </tr>
+  <tr>
+    <td class="label">Без НДС</td>
+    <td class="num">—</td>
+  </tr>
+  <tr>
+    <td class="grand">Итого к оплате</td>
+    <td class="num grand">{{ rows | map(attribute='amount') | map('float') | sum | money }} ₽</td>
+  </tr>
+</table>
+
+{% if status %}<div class="status">{{ status }}</div>{% endif %}
+
+<footer>
+  Документ сформирован {{ generated_at.strftime('%d.%m.%Y в %H:%M') }} из файла {{ source.file }}.
+  Счёт действителен в течение 10 банковских дней.
+</footer>
+
+</body>
+</html>
