@@ -1,0 +1,22 @@
+<!-- Форма создания новой заметки (главная страница, свёрнута по умолчанию) -->
+<div id="add-form" class="form-section form-section--collapsible">
+    <h3 class="form-section__title">Новая заметка</h3>
+    <form action="{{ url_for('add_note') }}" method="POST" enctype="multipart/form-data" class="note-form">
+        <div class="note-form__field">
+            <label for="add-title" class="note-form__label">Заголовок <span class="note-form__required">*</span></label>
+            <input type="text" id="add-title" name="title" placeholder="Введите заголовок" required class="note-form__input">
+        </div>
+        <div class="note-form__field">
+            <label for="add-content" class="note-form__label">Содержание</label>
+            <textarea id="add-content" name="content" rows="3" placeholder="Текст заметки" class="note-form__textarea"></textarea>
+        </div>
+        <div class="note-form__field">
+            <span class="note-form__label">Прикреплённые файлы</span>
+            <input type="file" id="add-files" name="files" multiple class="file-input__control" data-file-list="add-files-list">
+            <label for="add-files" class="btn btn--outline file-input__button">📎 Выбрать файлы</label>
+            <ul class="file-input__list" id="add-files-list"></ul>
+            <small class="note-form__hint">Можно выбрать несколько файлов — они сохранятся в хранилище и будут открываться прямо в браузере</small>
+        </div>
+        <button type="submit" class="btn btn--primary note-form__submit">+ Создать</button>
+    </form>
+</div>

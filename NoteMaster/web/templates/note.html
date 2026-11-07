@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}NoteMaster — {{ note.title }}{% endblock %}
+
+{% block content %}
+    <div class="note-detail">
+        <a href="{{ url_for('index') }}" class="btn btn--ghost">← Назад к заметкам</a>
+
+        <div class="note-detail__info">
+            <h2 class="note-detail__title">{{ note.title }}</h2>
+            <div class="note-detail__meta">
+                <span class="note-detail__id">{{ note.id }}</span>
+                <span>Изменена: {{ note.timestamp[:19] }}</span>
+            </div>
+            {% if note.content %}
+                <div class="note-detail__content">{{ note.content }}</div>
+            {% endif %}
+            {% if attachments %}
+                <div class="note-detail__attachments">
+                    <h4 class="attachments-heading">Прикреплённые файлы <span class="attachments-count">{{ attachments|length }}</span></h4>
+                    <div class="attachments-grid">
+                        {% for item in attachments %}
+                            {% if item.available %}
+                                <a class="attachment-card" href="{{ item.url }}" target="_blank" rel="noopener" title="Открыть в новой вкладке">
+                                    <span class="attachment-card__icon">{{ item.icon }}</span>
+                                    <span class="attachment-card__body">
+                                        <span class="attachment-card__name">{{ item.name }}</span>
+                                        <span class="attachment-card__meta">{{ item.size }}</span>
+                                    </span>
+                                    <span class="attachment-card__open">↗</span>
+                                </a>
+                            {% else %}
+                                <div class="attachment-card attachment-card--missing" title="{{ item.error }}">
+                                    <span class="attachment-card__icon">{{ item.icon }}</span>
+                                    <span class="attachment-card__body">
+                                        <span class="attachment-card__name">{{ item.name }}</span>
+                                        <span class="attachment-card__meta attachment-card__meta--error">⚠ {{ item.error }}</span>
+                                    </span>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="note-detail__actions">
+            <a href="#edit-form" class="btn btn--primary" onclick="document.getElementById('edit-form').scrollIntoView({behavior:'smooth'}); return false;">
+                ✎ Редактировать
+            </a>
+            <form action="{{ url_for('delete_note', note_id=note.id) }}" method="POST" class="delete-form" id="delete-form-{{ note.id }}">
+                <button type="button" class="btn btn--danger" onclick='confirmDelete({{ note.id|tojson }}, {{ note.title|tojson }})'>
+                    🗑 Удалить
+                </button>
+            </form>
+        </div>
+
+        {% include "partials/form_edit.html" %}
+    </div>
+{% endblock %}

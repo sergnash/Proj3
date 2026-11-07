@@ -1,0 +1,874 @@
+/* NoteMaster — стили веб-интерфейса */
+
+/* ------------------------------------------------------------------ */
+/* CSS Custom Properties (цитрусовая палитра)                           */
+/* ------------------------------------------------------------------ */
+
+:root {
+    --bg: #ffffff;
+    --bg-secondary: #fafafa;
+    --text: #2d2d2d;
+    --text-muted: #888888;
+    --text-light: #b0b0b0;
+
+    /* Цитрусовые акценты */
+    --accent-lemon: #f5d442;
+    --accent-lemon-light: #fef9e7;
+    --accent-orange: #ff8c42;
+    --accent-orange-dark: #e6732e;
+    --accent-lime: #8bc34a;
+    --accent-lime-light: #f1f8e9;
+
+    /* Семантика */
+    --success: #4caf50;
+    --success-bg: #e8f5e9;
+    --error: #e53935;
+    --error-bg: #ffebee;
+    --warning: #ff9800;
+    --warning-bg: #fff3e0;
+
+    /* Компоненты */
+    --card-bg: #ffffff;
+    --card-border: #f0ebe3;
+    --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    --card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Градиент для акцентных элементов */
+    --gradient-citrus: linear-gradient(135deg, var(--accent-lemon), var(--accent-orange));
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                 */
+/* ------------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ------------------------------------------------------------------ */
+/* Плавающий фон                                                       */
+/* ------------------------------------------------------------------ */
+
+#background-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.floating-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.08;
+    animation: float linear infinite;
+}
+
+.floating-circle--lemon {
+    background: var(--accent-lemon);
+}
+
+.floating-circle--orange {
+    background: var(--accent-orange);
+}
+
+.floating-circle--lime {
+    background: var(--accent-lime);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.08;
+    }
+    90% {
+        opacity: 0.08;
+    }
+    100% {
+        transform: translateY(-10vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Основной контейнер                                                  */
+/* ------------------------------------------------------------------ */
+
+.app-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ------------------------------------------------------------------ */
+/* Шапка                                                               */
+/* ------------------------------------------------------------------ */
+
+.app-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--accent-lemon-light);
+}
+
+.app-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: var(--gradient-citrus);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.25rem;
+}
+
+.app-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Flash-сообщения                                                     */
+/* ------------------------------------------------------------------ */
+
+.flash-container {
+    margin-bottom: 1.5rem;
+}
+
+.flash {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.flash--success {
+    background: var(--success-bg);
+    color: var(--success);
+    border-left: 4px solid var(--success);
+}
+
+.flash--error {
+    background: var(--error-bg);
+    color: var(--error);
+    border-left: 4px solid var(--error);
+}
+
+.flash--warning {
+    background: var(--warning-bg);
+    color: var(--warning);
+    border-left: 4px solid var(--warning);
+}
+
+.flash-icon {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.flash-text {
+    flex: 1;
+}
+
+.flash-close {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: var(--transition);
+    padding: 0 0.25rem;
+}
+
+.flash-close:hover {
+    opacity: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Заголовок страницы                                                  */
+/* ------------------------------------------------------------------ */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.page-header h2 {
+    font-size: 1.5rem;
+    color: var(--text);
+}
+
+/* ------------------------------------------------------------------ */
+/* Кнопки                                                              */
+/* ------------------------------------------------------------------ */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.btn--primary {
+    background: var(--gradient-citrus);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(255, 140, 66, 0.3);
+}
+
+.btn--primary:hover {
+    box-shadow: 0 6px 20px rgba(255, 140, 66, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn--secondary {
+    background: var(--accent-lime-light);
+    color: var(--accent-lime);
+    border: 1.5px solid var(--accent-lime);
+}
+
+.btn--secondary:hover {
+    background: var(--accent-lime);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(139, 195, 74, 0.3);
+}
+
+.btn--danger {
+    background: var(--error-bg);
+    color: var(--error);
+    border: 1.5px solid var(--error);
+}
+
+.btn--danger:hover {
+    background: var(--error);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+}
+
+.btn--ghost {
+    background: transparent;
+    color: var(--text-muted);
+    padding: 0.5rem 0.75rem;
+}
+
+.btn--ghost:hover {
+    color: var(--text);
+    background: var(--bg-secondary);
+}
+
+/* Контурная кнопка (акцент-оранжевый, нейтральный фон) */
+.btn--outline {
+    background: #fff;
+    color: var(--accent-orange);
+    border: 1.5px solid var(--accent-orange);
+}
+
+.btn--outline:hover {
+    background: var(--accent-orange);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+}
+
+/* Маленькая кнопка (для карточек) */
+.btn--sm {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Выбор файлов                                                        */
+/* ------------------------------------------------------------------ */
+
+/* Нативный input скрыт — вместо него кнопка-label */
+.file-input__control {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.file-input__button {
+    display: inline-flex;
+    cursor: pointer;
+    margin-top: 0.25rem;
+}
+
+.file-input__control:focus-visible + .file-input__button {
+    outline: 2px solid var(--accent-orange);
+    outline-offset: 2px;
+}
+
+.file-input__button:hover {
+    transform: translateY(-1px);
+}
+
+.file-input__list {
+    list-style: none;
+    padding: 0;
+    margin: 0.6rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.file-input__list:empty {
+    display: none;
+}
+
+.file-input__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--accent-lemon-light);
+    border: 1px solid var(--accent-lemon);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--text);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Вложения: управление в форме                                        */
+/* ------------------------------------------------------------------ */
+
+.attachment-manage {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.attachment-manage__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+}
+
+.attachment-manage__item:hover {
+    border-color: var(--accent-lemon);
+    background: var(--accent-lemon-light);
+}
+
+.attachment-manage__link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    flex: 1;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.88rem;
+}
+
+.attachment-manage__link:hover {
+    color: var(--accent-orange-dark);
+}
+
+.attachment-manage__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.attachment-manage__size {
+    color: var(--text-light);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.attachment-manage__remove {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    color: var(--error);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Вложения: карточки в просмотре заметки                              */
+/* ------------------------------------------------------------------ */
+
+.attachments-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.attachments-count {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    background: var(--accent-lime-light);
+    color: var(--accent-lime);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.attachments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 0.75rem;
+}
+
+.attachment-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--card-bg);
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--text);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.attachment-card:hover {
+    border-color: var(--accent-orange);
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.attachment-card__icon {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.attachment-card__body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+
+.attachment-card__name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.attachment-card__meta {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.attachment-card__open {
+    color: var(--accent-orange);
+    font-size: 1.1rem;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.attachment-card:hover .attachment-card__open {
+    opacity: 1;
+}
+
+/* Недоступное вложение: файл перемещён или удалён */
+.attachment-card--missing {
+    border-style: dashed;
+    border-color: var(--error);
+    background: var(--error-bg);
+    cursor: default;
+}
+
+.attachment-card--missing:hover {
+    transform: none;
+    border-color: var(--error);
+    box-shadow: var(--card-shadow);
+}
+
+.attachment-card__meta--error {
+    color: var(--error);
+}
+
+.attachment-manage__item--missing {
+    border-style: dashed;
+    border-color: var(--error);
+}
+
+.attachment-manage__link--missing {
+    cursor: default;
+    color: var(--text-light);
+}
+
+.attachment-manage__link--missing:hover {
+    color: var(--text-light);
+}
+
+.attachment-manage__size--error {
+    color: var(--error);
+}
+
+/* ------------------------------------------------------------------ */
+/* Секция формы                                                        */
+/* ------------------------------------------------------------------ */
+
+.form-section {
+    background: var(--card-bg);
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.form-section:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+/* Свёрнутая/развёрнутая форма (добавление на главной) */
+.form-section--collapsible {
+    display: none;
+}
+
+.form-section--collapsible.form-section--open {
+    display: block;
+}
+
+.form-section__title {
+    font-size: 1.15rem;
+    margin-bottom: 1.25rem;
+    color: var(--text);
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--accent-lemon-light);
+}
+
+/* ------------------------------------------------------------------ */
+/* Форма заметки                                                       */
+/* ------------------------------------------------------------------ */
+
+.note-form__field {
+    margin-bottom: 1.15rem;
+}
+
+.note-form__label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.note-form__required {
+    color: var(--error);
+}
+
+.note-form__input,
+.note-form__textarea {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: var(--transition);
+    background: var(--bg);
+    color: var(--text);
+}
+
+.note-form__input:focus,
+.note-form__textarea:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+}
+
+.note-form__textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.note-form__hint {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--text-light);
+    font-size: 0.8rem;
+}
+
+.note-form__submit {
+    margin-top: 0.5rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Сетка заметок (карточки)                                            */
+/* ------------------------------------------------------------------ */
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+}
+
+.note-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.note-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-3px);
+    border-color: var(--accent-lemon);
+}
+
+.note-card__header {
+    margin-bottom: 0.75rem;
+}
+
+.note-card__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+}
+
+.note-card__id {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.note-card__content {
+    flex: 1;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.note-card__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--bg-secondary);
+}
+
+.note-card__timestamp {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+}
+
+.note-card__attachments {
+    white-space: nowrap;
+}
+
+.note-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Пустое состояние                                                    */
+/* ------------------------------------------------------------------ */
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-light);
+}
+
+.empty-state__icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state__text {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state__hint {
+    font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Просмотр заметки                                                    */
+/* ------------------------------------------------------------------ */
+
+.note-detail__info {
+    background: var(--card-bg);
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin: 1.25rem 0;
+    box-shadow: var(--card-shadow);
+}
+
+.note-detail__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+}
+
+.note-detail__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--accent-lemon-light);
+}
+
+.note-detail__id {
+    font-family: 'Consolas', 'Courier New', monospace;
+    background: var(--bg-secondary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.note-detail__content {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.note-detail__attachments {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--bg-secondary);
+}
+
+.note-detail__actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.delete-form {
+    display: contents;
+}
+
+/* ------------------------------------------------------------------ */
+/* Подвал                                                              */
+/* ------------------------------------------------------------------ */
+
+.app-footer {
+    text-align: center;
+    padding: 2rem 0 1rem;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    margin-top: auto;
+}
+
+/* ------------------------------------------------------------------ */
+/* Адаптивность                                                        */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+    .app-container {
+        padding: 1rem;
+    }
+
+    .app-title {
+        font-size: 2rem;
+    }
+
+    .notes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .note-detail__actions {
+        flex-direction: column;
+    }
+}

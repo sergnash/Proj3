@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}NoteMaster — Заметки{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h2>Все заметки ({{ notes|length }})</h2>
+        <button type="button" class="btn btn--primary btn--add" onclick="toggleAddForm()">+ Добавить</button>
+    </div>
+
+    {% include "partials/form_add.html" %}
+
+    {% if notes %}
+        <div class="notes-grid">
+            {% for note in notes %}
+                <div class="note-card">
+                    <div class="note-card__header">
+                        <h3 class="note-card__title">{{ note.title }}</h3>
+                        <span class="note-card__id">{{ note.id|short_id }}</span>
+                    </div>
+                    {% if note.content %}
+                        <p class="note-card__content">{{ note.content[:200] }}{% if note.content|length > 200 %}…{% endif %}</p>
+                    {% endif %}
+                    <div class="note-card__meta">
+                        <span class="note-card__timestamp">{{ note.timestamp[:19] }}</span>
+                        {% if note.attachments %}
+                            <span class="note-card__attachments">📎 {{ note.attachments|length }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="note-card__actions">
+                        <a href="{{ url_for('note_detail', note_id=note.id) }}" class="btn btn--secondary btn--sm">Открыть</a>
+                        <a href="{{ url_for('note_detail', note_id=note.id) }}#edit-form" class="btn btn--outline btn--sm">✎ Изменить</a>
+                        <form action="{{ url_for('delete_note', note_id=note.id) }}" method="POST" class="delete-form" id="delete-form-{{ note.id }}">
+                            <button type="button" class="btn btn--danger btn--sm" onclick='confirmDelete({{ note.id|tojson }}, {{ note.title|tojson }})'>🗑 Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state__icon">📝</div>
+            <p class="empty-state__text">Заметок пока нет</p>
+            <p class="empty-state__hint">Нажмите «+ Добавить» чтобы создать первую заметку</p>
+        </div>
+    {% endif %}
+{% endblock %}

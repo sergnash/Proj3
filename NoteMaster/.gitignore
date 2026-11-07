@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Виртуальные окружения
+.venv/
+venv/
+
+# Тесты и проверки
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+
+# Логи
+*.log
+
+# Пользовательские данные (раскомментируйте, если не хотите коммитить заметки)
+# data/notes.json
+
+# Загруженные файлы-вложения (содержимое пользователя)
+data/uploads/
+web/static/uploads/
+# Резервные копии повреждённого хранилища
+data/notes_backup.json

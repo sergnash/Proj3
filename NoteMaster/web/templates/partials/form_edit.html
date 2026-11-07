@@ -1,0 +1,52 @@
+<!-- Форма редактирования заметки -->
+<div id="edit-form" class="form-section">
+    <h3 class="form-section__title">Редактирование: {{ note.title }}</h3>
+    <form action="{{ url_for('edit_note', note_id=note.id) }}" method="POST" enctype="multipart/form-data" class="note-form">
+        <div class="note-form__field">
+            <label for="edit-title" class="note-form__label">Заголовок <span class="note-form__required">*</span></label>
+            <input type="text" id="edit-title" name="title" value="{{ note.title }}" required class="note-form__input">
+        </div>
+        <div class="note-form__field">
+            <label for="edit-content" class="note-form__label">Содержание</label>
+            <textarea id="edit-content" name="content" rows="4" placeholder="Текст заметки" class="note-form__textarea">{{ note.content }}</textarea>
+        </div>
+
+        <div class="note-form__field">
+            <span class="note-form__label">Прикреплённые файлы</span>
+            <input type="hidden" name="attachments_touched" value="1">
+
+            {% if attachments %}
+                <ul class="attachment-manage">
+                    {% for item in attachments %}
+                        <li class="attachment-manage__item{% if not item.available %} attachment-manage__item--missing{% endif %}">
+                            {% if item.available %}
+                                <a class="attachment-manage__link" href="{{ item.url }}" target="_blank" rel="noopener">
+                                    <span class="attachment-manage__icon">{{ item.icon }}</span>
+                                    <span class="attachment-manage__name">{{ item.name }}</span>
+                                    <span class="attachment-manage__size">{{ item.size }}</span>
+                                </a>
+                            {% else %}
+                                <span class="attachment-manage__link attachment-manage__link--missing">
+                                    <span class="attachment-manage__icon">{{ item.icon }}</span>
+                                    <span class="attachment-manage__name">{{ item.name }}</span>
+                                    <span class="attachment-manage__size attachment-manage__size--error">⚠ {{ item.error }}</span>
+                                </span>
+                            {% endif %}
+                            <label class="attachment-manage__remove">
+                                <input type="checkbox" name="remove_attachments" value="{{ item.raw }}">
+                                удалить
+                            </label>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <input type="file" id="edit-files" name="files" multiple class="file-input__control" data-file-list="edit-files-list">
+            <label for="edit-files" class="btn btn--outline file-input__button">📎 Выбрать файлы</label>
+            <ul class="file-input__list" id="edit-files-list"></ul>
+            <small class="note-form__hint">Новые файлы добавятся к списку, отмеченные «удалить» — уберутся</small>
+        </div>
+
+        <button type="submit" class="btn btn--primary note-form__submit">💾 Сохранить</button>
+    </form>
+</div>
