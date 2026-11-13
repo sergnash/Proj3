@@ -1,0 +1,20 @@
+# Секреты и локальные данные
+.key
+.key.tmp
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.deps/
+.tmp/
+.tmp-test/
+
+# Инструменты
+.pytest_cache/
+.mypy_cache/
